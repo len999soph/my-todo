@@ -36,6 +36,22 @@ const en = {
   progressLabel: (done: number, total: number) =>
     `${done} of ${total} task${total !== 1 ? 's' : ''} completed`,
 
+  // Sidebar – daily reminder
+  reminderSection: 'Daily Reminder',
+  reminderEnableLabel: 'Daily notification',
+  reminderTimeLabel: 'Time',
+  reminderNotifyNow: '🔔 Notify me now',
+  reminderHint: (time: string) => `You'll be reminded at ${time} each day.`,
+  reminderBlocked: '🔕 Notifications are blocked in your browser settings.',
+  reminderUnsupported: 'Notifications aren’t supported in this browser.',
+  reminderNotifTitle: '📋 Your to-do for today',
+  reminderNotifEmpty: 'All clear — no pending tasks today! 🎉',
+  reminderNotifMore: (n: number) => `…and ${n} more`,
+  reminderNotifFooter: (overdue: number, pending: number) =>
+    overdue > 0
+      ? `${overdue} overdue · ${pending} pending`
+      : `${pending} task${pending !== 1 ? 's' : ''} pending`,
+
   // TaskArea
   filterTitles: {
     all: 'All Tasks',
@@ -124,6 +140,22 @@ const zh: typeof en = {
   progressSection: '进度',
   progressLabel: (done: number, total: number) =>
     `已完成 ${done} / ${total} 项任务`,
+
+  // Sidebar – daily reminder
+  reminderSection: '每日提醒',
+  reminderEnableLabel: '每日通知',
+  reminderTimeLabel: '时间',
+  reminderNotifyNow: '🔔 立即提醒我',
+  reminderHint: (time: string) => `每天 ${time} 提醒您。`,
+  reminderBlocked: '🔕 浏览器设置中已禁用通知。',
+  reminderUnsupported: '此浏览器不支持通知。',
+  reminderNotifTitle: '📋 今日待办',
+  reminderNotifEmpty: '一切就绪——今天没有待办任务！🎉',
+  reminderNotifMore: (n: number) => `…还有 ${n} 项`,
+  reminderNotifFooter: (overdue: number, pending: number) =>
+    overdue > 0
+      ? `逾期 ${overdue} 项 · 待处理 ${pending} 项`
+      : `待处理 ${pending} 项任务`,
 
   // TaskArea
   filterTitles: {

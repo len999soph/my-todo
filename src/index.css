@@ -107,6 +107,7 @@ body {
 
 input[type="text"],
 input[type="date"],
+input[type="time"],
 input[type="password"],
 select,
 textarea {
@@ -124,6 +125,7 @@ textarea {
 
 input[type="text"]:focus,
 input[type="date"]:focus,
+input[type="time"]:focus,
 input[type="password"]:focus,
 select:focus,
 textarea:focus { border-color: var(--accent); }
@@ -132,6 +134,12 @@ input::placeholder { color: var(--muted); }
 select option { background: #1f1f23; }
 
 .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+/* ── Daily reminder ── */
+.reminder-group { display: flex; flex-direction: column; gap: 9px; }
+.reminder-row { display: flex; align-items: center; gap: 9px; }
+.reminder-row input[type="checkbox"] { width: auto; accent-color: var(--accent); }
+.reminder-row input[type="time"] { flex: 1; }
 
 /* ── Buttons ── */
 .btn {

@@ -1,7 +1,8 @@
 import { useState, useCallback } from 'react';
-import type { Filter, Priority } from './types';
+import type { Filter, Priority, Task } from './types';
 import { useTasks } from './hooks/useTasks';
 import { useAIAgent } from './hooks/useAIAgent';
+import { useDailyReminder, type DailySummary } from './hooks/useDailyReminder';
 import { LanguageProvider, useLanguage } from './LanguageContext';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
@@ -23,6 +24,31 @@ function AppInner() {
   const { messages, status, sendMessage, appendApiKeySaved } = useAIAgent();
 
   const filteredTasks = getFiltered(filter);
+
+  // Build the daily notification text from the current tasks, urgency-first.
+  const buildSummary = useCallback(
+    (list: Task[]): DailySummary => {
+      const today = new Date().toISOString().split('T')[0];
+      const pending = list.filter(task => !task.done);
+      const overdue = pending.filter(task => task.due && task.due < today).length;
+
+      const urgency = (task: Task): number =>
+        task.due && task.due < today ? 0 : task.due === today ? 1 : 2;
+      const sorted = [...pending].sort((a, b) => urgency(a) - urgency(b));
+
+      if (sorted.length === 0) {
+        return { title: t.reminderNotifTitle, body: t.reminderNotifEmpty };
+      }
+
+      const shown = sorted.slice(0, 6).map(task => `• ${task.title}`);
+      if (sorted.length > 6) shown.push(t.reminderNotifMore(sorted.length - 6));
+      const body = `${shown.join('\n')}\n\n${t.reminderNotifFooter(overdue, pending.length)}`;
+      return { title: t.reminderNotifTitle, body };
+    },
+    [t]
+  );
+
+  const reminder = useDailyReminder({ tasks, buildSummary });
 
   const handleSaveApiKey = useCallback(
     (key: string) => {
@@ -67,6 +93,7 @@ function AppInner() {
           stats={stats}
           onFilterChange={setFilter}
           onAddTask={addTask}
+          reminder={reminder}
         />
         <TaskArea
           tasks={filteredTasks}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Filter, Priority } from '../types';
 import type { TaskStats } from '../hooks/useTasks';
+import type { useDailyReminder } from '../hooks/useDailyReminder';
 import { useLanguage } from '../LanguageContext';
 
 interface SidebarProps {
@@ -8,9 +9,10 @@ interface SidebarProps {
   stats: TaskStats;
   onFilterChange: (f: Filter) => void;
   onAddTask: (title: string, priority: Priority, due: string) => void;
+  reminder: ReturnType<typeof useDailyReminder>;
 }
 
-export default function Sidebar({ filter, stats, onFilterChange, onAddTask }: SidebarProps) {
+export default function Sidebar({ filter, stats, onFilterChange, onAddTask, reminder }: SidebarProps) {
   const { t } = useLanguage();
   const [inputVal, setInputVal] = useState('');
   const [priority, setPriority] = useState<Priority>('medium');
@@ -117,6 +119,49 @@ export default function Sidebar({ filter, stats, onFilterChange, onAddTask }: Si
         <div style={{ fontSize: 12.5, color: 'var(--muted)' }}>
           {t.progressLabel(stats.done, stats.total)}
         </div>
+      </div>
+
+      {/* Daily reminder */}
+      <div>
+        <div className="section-label">{t.reminderSection}</div>
+        {!reminder.supported ? (
+          <div style={{ fontSize: 12.5, color: 'var(--muted)' }}>
+            {t.reminderUnsupported}
+          </div>
+        ) : (
+          <div className="reminder-group">
+            <label className="reminder-row">
+              <input
+                type="checkbox"
+                checked={reminder.enabled}
+                onChange={e => reminder.setEnabled(e.target.checked)}
+              />
+              <span>{t.reminderEnableLabel}</span>
+            </label>
+            <div className="reminder-row">
+              <span style={{ fontSize: 12.5, color: 'var(--muted)' }}>
+                {t.reminderTimeLabel}
+              </span>
+              <input
+                type="time"
+                value={reminder.time}
+                onChange={e => reminder.setTime(e.target.value)}
+              />
+            </div>
+            <button className="btn btn-ghost btn-sm" onClick={() => reminder.fireNow()}>
+              {t.reminderNotifyNow}
+            </button>
+            {reminder.permission === 'denied' ? (
+              <div style={{ fontSize: 12, color: 'var(--danger)' }}>
+                {t.reminderBlocked}
+              </div>
+            ) : reminder.enabled ? (
+              <div style={{ fontSize: 12, color: 'var(--muted)' }}>
+                {t.reminderHint(reminder.time)}
+              </div>
+            ) : null}
+          </div>
+        )}
       </div>
     </aside>
   );
