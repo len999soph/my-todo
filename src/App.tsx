@@ -8,6 +8,9 @@ import Sidebar from './components/Sidebar';
 import TaskArea from './components/TaskArea';
 import AIPanel from './components/AIPanel';
 import SettingsModal from './components/SettingsModal';
+import StudyView from './components/StudyView';
+
+type View = 'tasks' | 'study';
 
 function loadApiKey(): string {
   return localStorage.getItem('agent-api-key') || '';
@@ -18,6 +21,7 @@ function AppInner() {
   const [apiKey, setApiKey] = useState<string>(loadApiKey);
   const [filter, setFilter] = useState<Filter>('all');
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [view, setView] = useState<View>('tasks');
 
   const { tasks, addTask, toggleTask, deleteTask, clearAll, stats, getFiltered } = useTasks();
   const { messages, status, sendMessage, appendApiKeySaved } = useAIAgent();
@@ -60,30 +64,39 @@ function AppInner() {
 
   return (
     <>
-      <Navbar stats={stats} onOpenSettings={() => setSettingsOpen(true)} />
-      <div className="main">
-        <Sidebar
-          filter={filter}
-          stats={stats}
-          onFilterChange={setFilter}
-          onAddTask={addTask}
-        />
-        <TaskArea
-          tasks={filteredTasks}
-          filter={filter}
-          onToggle={toggleTask}
-          onDelete={deleteTask}
-        />
-        <AIPanel
-          apiKey={apiKey}
-          tasks={tasks}
-          messages={messages}
-          status={status}
-          onSaveApiKey={handleSaveApiKey}
-          onSendMessage={handleSendMessage}
-          onAddTask={addTask}
-        />
-      </div>
+      <Navbar
+        stats={stats}
+        view={view}
+        onViewChange={setView}
+        onOpenSettings={() => setSettingsOpen(true)}
+      />
+      {view === 'study' ? (
+        <StudyView />
+      ) : (
+        <div className="main">
+          <Sidebar
+            filter={filter}
+            stats={stats}
+            onFilterChange={setFilter}
+            onAddTask={addTask}
+          />
+          <TaskArea
+            tasks={filteredTasks}
+            filter={filter}
+            onToggle={toggleTask}
+            onDelete={deleteTask}
+          />
+          <AIPanel
+            apiKey={apiKey}
+            tasks={tasks}
+            messages={messages}
+            status={status}
+            onSaveApiKey={handleSaveApiKey}
+            onSendMessage={handleSendMessage}
+            onAddTask={addTask}
+          />
+        </div>
+      )}
       <SettingsModal
         open={settingsOpen}
         apiKey={apiKey}
